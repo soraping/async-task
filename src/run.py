@@ -3,7 +3,7 @@ from sanic import response
 from src.config import CONFIG
 
 app = Sanic(name='async-task')
-app.config.update(CONFIG())
+app.config.update(CONFIG.get_config())
 
 
 @app.route('/hello')
