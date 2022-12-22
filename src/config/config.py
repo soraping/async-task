@@ -1,5 +1,16 @@
 import os
 import types
+import yaml
+
+
+class AttrDict(dict):
+    """
+    字典转换器
+    """
+
+    def __init__(self, *args, **kwargs) -> None:
+        super(AttrDict, self).__init__(*args, **kwargs)
+        self.__dict__ = self
 
 
 class Config:
@@ -12,22 +23,21 @@ class Config:
         修改实例，为app.config.update实际参数
         遍历实例参数，子类属性也会遍历
         """
+        # 读取config.yaml
+        with open(os.path.join(cls.BASE_DIR, 'config/config.yaml')) as f:
+            config_file_dict = AttrDict(yaml.safe_load(f))
+
         # 去掉method
         attr_gen = (i for i in dir(cls) if type(getattr(cls, i)) is not types.MethodType)
-        return {
-                    attr: getattr(cls, attr)
-                    for attr in attr_gen
-                    if not attr.startswith('__')
+        # class 配置项
+        class_config = {
+            attr: getattr(cls, attr)
+            for attr in attr_gen
+            if not attr.startswith('__')
         }
-
-    # def __new__(cls, *args, **kwargs):
-    #     """
-    #     修改实例，为app.config.update实际参数
-    #     遍历实例参数，子类属性也会遍历
-    #     :param args:
-    #     :param kwargs:
-    #     """
-    #     return {attr: getattr(cls, attr) for attr in dir(cls) if not attr.startswith("__")}
+        # 拼接配置
+        class_config.update(config_file_dict)
+        return class_config
 
 
 if __name__ == '__main__':
