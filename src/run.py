@@ -1,6 +1,7 @@
 from sanic import Sanic
 from src.config import CONFIG
 from werkzeug.utils import find_modules, import_string
+from models import ReconnectAsyncPooledMySQLDatabase
 
 app = Sanic(name='async-task')
 app.config.update(CONFIG.get_config())
@@ -23,15 +24,14 @@ register_blueprints('views', app)
 
 
 @app.after_server_start
-async def setup(app, loop):
+async def setup(app: Sanic, loop) -> None:
     print("app start")
-    pass
+    db = ReconnectAsyncPooledMySQLDatabase(**app.config['mysql'])
 
 
 @app.after_server_stop
 async def stop(app):
     print("app stop")
-    pass
 
 
 if __name__ == '__main__':
