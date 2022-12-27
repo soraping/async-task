@@ -1,7 +1,8 @@
 from sanic import Sanic
+from peewee_async import Manager
 from src.config import CONFIG
 from werkzeug.utils import find_modules, import_string
-from models import ReconnectAsyncPooledMySQLDatabase
+from models import ReconnectMySQLDatabase, db as db_proxy
 
 app = Sanic(name='async-task')
 app.config.update(CONFIG.get_config())
@@ -26,12 +27,17 @@ register_blueprints('views', app)
 @app.after_server_start
 async def setup(app: Sanic, loop) -> None:
     print("app start")
-    db = ReconnectAsyncPooledMySQLDatabase(**app.config['mysql'])
+    db = ReconnectMySQLDatabase.get_db_instance(app.config['mysql'])
+    db_proxy.initialize(db)
+    mgr = Manager(db)
+    app.ctx.db = mgr
+
 
 
 @app.after_server_stop
 async def stop(app):
     print("app stop")
+    await app.ctx.db.close()
 
 
 if __name__ == '__main__':

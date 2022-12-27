@@ -2,7 +2,7 @@ from peewee import (
     CharField,
     PrimaryKeyField
 )
-from base import BaseModel
+from src.models.base import BaseModel
 
 
 class GoodsModel(BaseModel):

@@ -15,4 +15,4 @@ class BaseModel(Model):
                                 verbose_name='modify time')
 
     class Meta:
-        db = db
+        database = db
