@@ -1,6 +1,6 @@
 import functools
 from datetime import datetime
-from playhouse.migrate import MySQLDatabase, MySQLMigrator, Model
+from playhouse.migrate import MySQLDatabase, MySQLMigrator, Model, migrate as peewee_migrate
 from peewee import (
     PrimaryKeyField,
     CharField,
@@ -13,7 +13,7 @@ db_manager = MySQLDatabase(**config_dict['mysql'])
 migrator = MySQLMigrator(db_manager)
 
 
-def migration_record():
+def migration_record(version='1.0', author='admin', desc=''):
     """
     记录操作
     :return:
@@ -26,8 +26,9 @@ def migration_record():
             MigrationRecordModel.create(
                 table=target_self._name,
                 create_time=datetime.utcnow(),
-                version='1.0',
-                author='admin',
+                version=version,
+                author=author,
+                desc=desc,
                 function=target_self.__class__.__name__ + '.' + fn.__name__
             )
         return _decorator
@@ -39,10 +40,10 @@ class MigrationRecordModel(Model):
     表操作模型
     """
     id = PrimaryKeyField()
-    table = CharField()
-    version = CharField()
-    author = CharField()
-    function = CharField()
+    table = CharField(null=True)
+    version = CharField(null=True)
+    author = CharField(null=True)
+    function = CharField(null=True)
     desc = CharField(null=True)
     create_time = DateTimeField(verbose_name='创建时间',
                                 default=datetime.utcnow(), help_text='表操作记录')
@@ -78,7 +79,7 @@ class MigratorOperate:
         """
         print('Migrating==> [%s] add_column: %s' % (self._name, col))
         field = getattr(self._model, col) if not field else field
-        return self._migrator.add_column(self._name, col, field)
+        return peewee_migrate(self._migrator.add_column(self._name, col, field))
 
     def rename_column(self, old, new):
         """
@@ -88,7 +89,7 @@ class MigratorOperate:
         :return:
         """
         print('Migrating==> [%s] rename_column: (%s)-->(%s)' % (self._name, old, new))
-        return self._migrator.rename_column(self._name, old, new)
+        return peewee_migrate(self._migrator.rename_column(self._name, old, new))
 
     def drop_column(self, col):
         """
@@ -97,7 +98,7 @@ class MigratorOperate:
         :return:
         """
         print('Migrating==> [%s] drop_column: %s' % (self._name, col))
-        return self._migrator.drop_column(self._name, col)
+        return peewee_migrate(self._migrator.drop_column(self._name, col))
 
     def drop_not_null(self, col):
         """
@@ -106,7 +107,7 @@ class MigratorOperate:
         :return:
         """
         print('Migrating==> [%s] drop_not_null: %s' % (self._name, col))
-        return self._migrator.drop_not_null(self._name, col)
+        return peewee_migrate(self._migrator.drop_not_null(self._name, col))
 
     def add_not_null(self, col):
         """
@@ -115,7 +116,7 @@ class MigratorOperate:
         :return:
         """
         print('Migrating==> [%s] add_not_null: %s' % (self._name, col))
-        return self._migrator.add_not_null(self._name, col)
+        return peewee_migrate(self._migrator.add_not_null(self._name, col))
 
     def add_unique(self, *cols):
         """
@@ -123,7 +124,7 @@ class MigratorOperate:
         :param cols:
         :return:
         """
-        return self._migrator.add_unique(self._name, *cols)
+        return peewee_migrate(self._migrator.add_unique(self._name, *cols))
 
     @migration_record()
     def auto_migrate(self):
@@ -146,4 +147,4 @@ class MigratorOperate:
 
 if __name__ == '__main__':
     migratorOperate = MigratorOperate(MigrationRecordModel)
-    migratorOperate.add_table_column('desc')
+    # migratorOperate.add_table_column('desc')
