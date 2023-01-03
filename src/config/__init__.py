@@ -14,11 +14,16 @@ class ModeEnum(Enum):
 
 
 def load_config():
+    """
+    第一种配置文件加载方式
+    :return:
+    """
     mode = os.environ.get('MODE', ModeEnum.DEV.value)
 
     try:
         if mode == ModeEnum.PRO.value:
             from .pro_config import ProConfig
+            ProConfig.MODE = "pro"
             return ProConfig
         else:
             from .dev_config import DevConfig

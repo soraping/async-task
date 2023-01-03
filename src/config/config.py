@@ -16,15 +16,20 @@ class AttrDict(dict):
 class Config:
     TIMEZONE = 'Asia/Shanghai'
     BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+    # 模式
+    MODE = "dev"
 
     @classmethod
     def get_config(cls):
         """
+        第二种配置加载方式
+        加载 .yaml 文件
+
         修改实例，为app.config.update实际参数
         遍历实例参数，子类属性也会遍历
         """
-        # 读取config.yaml
-        with open(os.path.join(cls.BASE_DIR, 'config/config.yaml')) as f:
+        # 读取yaml配置
+        with open(os.path.join(cls.BASE_DIR, f'config/db-{cls.MODE}.yaml')) as f:
             config_file_dict = AttrDict(yaml.safe_load(f))
 
         # 去掉method

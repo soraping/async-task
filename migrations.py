@@ -6,7 +6,7 @@ from peewee import (
     CharField,
     DateTimeField
 )
-from config import CONFIG
+from src.config import CONFIG
 
 config_dict = CONFIG.get_config()
 db_manager = MySQLDatabase(**config_dict['mysql'])

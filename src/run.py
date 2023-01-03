@@ -1,6 +1,7 @@
 from sanic import Sanic
 from peewee_async import Manager
 from sanic_openapi import openapi3_blueprint
+
 from src.config import CONFIG
 from werkzeug.utils import find_modules, import_string
 from models import ReconnectMySQLDatabase, db as db_proxy
@@ -32,6 +33,8 @@ register_blueprints('views', app)
 async def setup(app: Sanic, loop) -> None:
     print("app start")
     print("swagger: {}/swagger".format(app.serve_location))
+
+    # 注册 mysql
     db = ReconnectMySQLDatabase.get_db_instance(app.config['mysql'])
     db_proxy.initialize(db)
     mgr = Manager(db)
@@ -45,4 +48,4 @@ async def stop(app):
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8081, debug=app.config['DEBUG'])
+    app.run(host='0.0.0.0', port=8089, debug=app.config['DEBUG'])
