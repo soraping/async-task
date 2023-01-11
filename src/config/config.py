@@ -34,6 +34,7 @@ class Config:
 
         # 去掉method
         attr_gen = (i for i in dir(cls) if type(getattr(cls, i)) is not types.MethodType)
+
         # class 配置项
         class_config = {
             attr: getattr(cls, attr)
