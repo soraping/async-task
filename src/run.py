@@ -1,7 +1,6 @@
 from sanic import Sanic
 from peewee_async import Manager
 from sanic_openapi import openapi3_blueprint
-from sanic_redis_ext import RedisExtension
 
 from src.config import CONFIG
 from werkzeug.utils import find_modules, import_string
@@ -9,9 +8,7 @@ from models import RedisSession, ReconnectMySQLDatabase, db as db_proxy
 
 app = Sanic(name='async-task')
 app.config.update(CONFIG.get_config())
-#
-# # 注册 redis
-# RedisExtension(app)
+
 
 # 注册 swagger
 app.blueprint(openapi3_blueprint)
@@ -45,14 +42,14 @@ async def setup(app: Sanic, loop) -> None:
     app.ctx.db = mgr
 
     # 注册 redis
-    app.ctx.redis = await RedisSession.get_redis_pool(app.config['redis'])
+    # app.ctx.redis = await RedisSession.get_redis_pool(app.config['redis'])
 
 
 @app.after_server_stop
 async def stop(app):
     print("app stop")
     await app.ctx.db.close()
-    await app.ctx.redis.close()
+    # await app.ctx.redis.close()
 
 
 if __name__ == '__main__':
