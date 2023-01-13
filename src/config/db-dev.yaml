@@ -11,3 +11,10 @@ redis:
   db: 0
   poolsize: 10
   password:
+
+mongo:
+  host: 127.0.0.1
+  port: 27017
+  username:
+  password:
+  database: 'yx-d2c'
