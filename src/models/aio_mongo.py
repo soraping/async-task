@@ -1,3 +1,4 @@
+from sanic.log import logger
 from motor.motor_asyncio import AsyncIOMotorClient
 from src.utils import singleton
 
@@ -23,6 +24,7 @@ class MotorBase:
             host=self.host,
             port=self.port,
             database=db_name)
+        logger.info(f"mongo 连接地址 {self.motor_uri}")
         return AsyncIOMotorClient(self.motor_uri)
 
     # @property
@@ -33,12 +35,13 @@ class MotorBase:
 
     def get_db(self, db_name):
         """
-        缓存
+        db 缓存
         db 实例
         :param db_name:
         :return:
         """
         db_name = db_name if db_name is None else self.database
+        logger.info(f'获取 mongo/{db_name} 库实例')
         if db_name not in self._db:
             self._db[db_name] = self.client(db_name)[db_name]
         return self._db[db_name]
@@ -52,6 +55,7 @@ class MotorBase:
         :return:
         """
         collection_key = db_name + collection
+        logger.info(f'获取 mongo/{db_name}.{collection} 集合实例')
         if collection_key not in self._collection:
             self._collection[collection_key] = self.get_db(db_name)[collection]
 

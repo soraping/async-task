@@ -18,6 +18,12 @@ class Config:
     BASE_DIR = os.path.dirname(os.path.dirname(__file__))
     # 模式
     MODE = "dev"
+    # 服务worker数量
+    WORKERS = 1
+
+    # 日志文件路径
+    LOGGING_INFO_FILE = None
+    LOGGING_ERROR_FILE = None
 
     @classmethod
     def get_config(cls):

@@ -1,12 +1,14 @@
-from src.models.db import ReconnectAsyncPooledMySQLDatabase, ReconnectMySQLDatabase
-from src.models.base import db
-from src.models.goods import GoodsModel
-from src.models.aio_redis import RedisSession
+from .db import ReconnectAsyncPooledMySQLDatabase, ReconnectMySQLDatabase
+from .base import db
+from .goods import GoodsModel
+from .aio_redis import RedisSession
+from .aio_mongo import MotorBase
 
 __all__ = [
     ReconnectAsyncPooledMySQLDatabase,
     ReconnectMySQLDatabase,
     RedisSession,
+    MotorBase,
     db,
     GoodsModel
 ]
