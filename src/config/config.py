@@ -21,10 +21,6 @@ class Config:
     # 服务worker数量
     WORKERS = 1
 
-    # 日志文件路径
-    LOGGING_INFO_FILE = None
-    LOGGING_ERROR_FILE = None
-
     @classmethod
     def get_config(cls):
         """

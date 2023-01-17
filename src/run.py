@@ -7,9 +7,12 @@ from src.config import CONFIG
 from werkzeug.utils import find_modules, import_string
 from models import RedisSession, MotorBase, ReconnectMySQLDatabase, db as db_proxy
 
-app = Sanic(name='async-task')
-app.config.update(CONFIG.get_config())
+# 配置信息
+app_config = CONFIG.get_config()
 
+# 服务
+app = Sanic(name='async-task', log_config=app_config['BASE_LOGGING'])
+app.config.update(app_config)
 
 # 注册 swagger
 app.blueprint(openapi3_blueprint)
@@ -36,11 +39,11 @@ async def setup(app: Sanic, loop) -> None:
     logger.info("app start")
     logger.info("swagger: {}/swagger".format(app.serve_location))
 
-    # 注册 mysql
-    db = ReconnectMySQLDatabase.get_db_instance(app.config['mysql'])
-    db_proxy.initialize(db)
-    mgr = Manager(db)
-    app.ctx.db = mgr
+    # # 注册 mysql
+    # db = ReconnectMySQLDatabase.get_db_instance(app.config['mysql'])
+    # db_proxy.initialize(db)
+    # mgr = Manager(db)
+    # app.ctx.db = mgr
 
     # 注册 redis
     # app.ctx.redis = await RedisSession.get_redis_pool(app.config['redis'])
@@ -54,7 +57,7 @@ async def setup(app: Sanic, loop) -> None:
 @app.after_server_stop
 async def stop(app):
     logger.info("app stop")
-    await app.ctx.db.close()
+    # await app.ctx.db.close()
     # await app.ctx.redis.close()
 
 
