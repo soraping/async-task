@@ -1,0 +1,8 @@
+asyncio_redis==0.16.0
+motor==3.1.1
+peewee==3.15.4
+peewee_async==0.8.0
+PyYAML==6.0
+sanic==22.9.1
+sanic_openapi==21.12.0
+Werkzeug==2.2.2
