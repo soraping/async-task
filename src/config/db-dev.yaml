@@ -6,15 +6,15 @@ mysql:
   database: "myadmin"
 
 redis:
-  host: 127.0.0.1
+  host: 172.21.3.207
   port: 6379
   db: 0
   poolsize: 10
   password:
 
 mongo:
-  host: 127.0.0.1
-  port: 27017
+  host: 172.19.66.14
+  port: 27000
   username:
   password:
   database: 'yx-d2c'

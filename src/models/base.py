@@ -1,11 +1,10 @@
 import datetime
 from peewee import (
     DateTimeField,
-    Model,
-    Proxy
+    Model
 )
 
-db = Proxy()
+from src.extension import db
 
 
 class BaseModel(Model):

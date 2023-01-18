@@ -20,7 +20,7 @@ class MotorBase:
         self.motor_uri = 'mongodb://{account}{host}:{port}/{database}'.format(
             account='{username}:{password}@'.format(
                 username=self.username,
-                password=self.password if self.username else ''),
+                password=self.password) if self.username else '',
             host=self.host,
             port=self.port,
             database=db_name)
@@ -67,4 +67,32 @@ if __name__ == '__main__':
     from src.config.config import Config
 
     mb = MotorBase(**Config.get_config()['mongo'])
+    mongo_db = mb.get_db('yx-d2c')
 
+    async def run(db):
+        data = {
+            "adminId": 'A123321',
+            "openId": "123321321321",
+            'dbs': [
+                {
+                    'cartItemId': "A998480_261146_261146_1670295716042",
+                    'levelPrice': "300",
+                    'salePrice': "300",
+                    'spuId': "261146",
+                    'skuId': "g471382",
+                    'shopId': "A998480",
+                    'quantity': 1
+                }
+            ]
+        }
+
+        result = await db.wxa_cart.insert_one(data)
+
+        print(result)
+
+        return result
+
+    async def query(db):
+        ...
+
+    asyncio.run(run(mongo_db))

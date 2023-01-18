@@ -1,5 +1,8 @@
+from peewee import Proxy
 from peewee_async import PooledMySQLDatabase, MySQLDatabase
 from playhouse.shortcuts import ReconnectMixin
+
+db = Proxy()
 
 
 class ReconnectBaseMysqlDB:

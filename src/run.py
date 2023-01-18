@@ -5,7 +5,7 @@ from sanic_openapi import openapi3_blueprint
 
 from src.config import CONFIG
 from werkzeug.utils import find_modules, import_string
-from models import RedisSession, MotorBase, ReconnectMySQLDatabase, db as db_proxy
+from extension import RedisSession, ReconnectMySQLDatabase, db_proxy
 
 # 配置信息
 app_config = CONFIG.get_config()
@@ -44,12 +44,12 @@ async def setup(app: Sanic, loop) -> None:
     # db_proxy.initialize(db)
     # mgr = Manager(db)
     # app.ctx.db = mgr
-
-    # 注册 redis
+    #
+    # # 注册 redis
     # app.ctx.redis = await RedisSession.get_redis_pool(app.config['redis'])
     # logger.info("redis 连接成功")
-
-    # 注册 mongo
+    #
+    # # 注册 mongo
     # app.ctx.mongo = MotorBase(**app.config['mongo']).get_db(app.config['mongo']['database'])
     # logger.info("mongo 连接成功")
 
@@ -59,6 +59,7 @@ async def stop(app):
     logger.info("app stop")
     # await app.ctx.db.close()
     # await app.ctx.redis.close()
+    # await app.ctx.mongo.close()
 
 
 if __name__ == '__main__':
