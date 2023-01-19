@@ -20,7 +20,7 @@ class ProConfig(Config):
         },
         'formatters': {
             'default': {
-                'format': '%(asctime)s | %(levelname)s | %(message)s',
+                'format': '%(asctime)-15s %(levelname)s %(filename)s %(lineno)d %(process)d %(message)s',
             }
         },
         'handlers': {

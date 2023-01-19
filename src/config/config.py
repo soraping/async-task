@@ -21,6 +21,13 @@ class Config:
     # 服务worker数量
     WORKERS = 1
 
+    # jwt
+    JWT = {
+        "secret_key": "async-task",
+        "private_claim_prefix": "sanic_jwt_ext",
+        "access_token_expires": 7
+    }
+
     @classmethod
     def get_config(cls):
         """

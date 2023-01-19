@@ -10,17 +10,22 @@ class DevConfig(Config):
     BASE_LOGGING = {
         'version': 1,
         'loggers': {
-            "sanic.root": {"level": "INFO", "handlers": ["console"]},
+            "sanic.root": {"level": "INFO", "handlers": ["console", "console_err"]},
         },
         'formatters': {
             'default': {
-                'format': '%(asctime)s | %(levelname)s | %(message)s',
+                'format': '%(asctime)-15s %(levelname)s %(filename)s %(lineno)d %(process)d %(message)s',
             }
         },
         'handlers': {
             'console': {
                 'class': 'logging.StreamHandler',
                 'level': 'INFO',
+                'formatter': 'default',
+            },
+            'console_err': {
+                'class': 'logging.StreamHandler',
+                'level': 'ERROR',
                 'formatter': 'default',
             }
         }

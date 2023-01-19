@@ -5,7 +5,7 @@ from sanic_openapi import openapi3_blueprint
 
 from src.config import CONFIG
 from werkzeug.utils import find_modules, import_string
-from extension import RedisSession, ReconnectMySQLDatabase, db_proxy
+from extension import JwtExt, RedisSession, ReconnectMySQLDatabase, db_proxy
 
 # 配置信息
 app_config = CONFIG.get_config()
@@ -38,6 +38,7 @@ register_blueprints('views', app)
 async def setup(app: Sanic, loop) -> None:
     logger.info("app start")
     logger.info("swagger: {}/swagger".format(app.serve_location))
+    JwtExt.initialize(app)
 
     # # 注册 mysql
     # db = ReconnectMySQLDatabase.get_db_instance(app.config['mysql'])
@@ -45,9 +46,9 @@ async def setup(app: Sanic, loop) -> None:
     # mgr = Manager(db)
     # app.ctx.db = mgr
     #
-    # # 注册 redis
-    # app.ctx.redis = await RedisSession.get_redis_pool(app.config['redis'])
-    # logger.info("redis 连接成功")
+    # 注册 redis
+    app.ctx.redis = await RedisSession.get_redis_pool(app.config['redis'])
+    logger.info("redis 连接成功")
     #
     # # 注册 mongo
     # app.ctx.mongo = MotorBase(**app.config['mongo']).get_db(app.config['mongo']['database'])
@@ -58,7 +59,7 @@ async def setup(app: Sanic, loop) -> None:
 async def stop(app):
     logger.info("app stop")
     # await app.ctx.db.close()
-    # await app.ctx.redis.close()
+    await app.ctx.redis.close()
     # await app.ctx.mongo.close()
 
 
