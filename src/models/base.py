@@ -4,7 +4,7 @@ from peewee import (
     Model
 )
 
-from src.extension import db
+from src.extension import db_proxy
 
 
 class BaseModel(Model):
@@ -14,4 +14,4 @@ class BaseModel(Model):
                                 verbose_name='modify time')
 
     class Meta:
-        database = db
+        database = db_proxy

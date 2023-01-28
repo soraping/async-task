@@ -1,22 +1,20 @@
-import datetime
-from roles import Role
-
+from src.models.base import BaseModel
 from peewee import (
-    Model,
-    DateTimeField,
     IntegerField,
     PrimaryKeyField,
     CharField,
     ForeignKeyField
 )
+from .roles import Role
 
 
-class UserModel(Model):
+class UserModel(BaseModel):
     id = PrimaryKeyField()
     username = CharField(max_length=20, verbose_name='user name')
-    age = IntegerField(null=False, verbose_name='user age')
-    role_id = ForeignKeyField(model=Role, on_delete='SET NULL', verbose_name='role for user')
-    create_time = DateTimeField(verbose_name='user create time', default=datetime.datetime.utcnow)
+    password = CharField(max_length=50, verbose_name='user password')
+    salt = CharField(max_length=10, verbose_name='password salt')
+    age = IntegerField(null=True, verbose_name='user age')
+    role_id = ForeignKeyField(model=Role, null=True, on_delete='SET NULL', verbose_name='role for user')
 
     class Meta:
         table_name = 'user'

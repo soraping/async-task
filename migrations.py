@@ -65,6 +65,7 @@ class MigratorOperate:
         # 对应模型
         self._model = model
         self._model._meta.database = self._db
+
         # 建表
         self._model.create_table(safe=True)
         # 表名
@@ -146,5 +147,6 @@ class MigratorOperate:
 
 
 if __name__ == '__main__':
-    migratorOperate = MigratorOperate(MigrationRecordModel)
-    # migratorOperate.add_table_column('desc')
+    from src.models import Role, UserModel
+    # MigratorOperate(Role)
+    # MigratorOperate(UserModel)

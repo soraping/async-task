@@ -1,17 +1,26 @@
-import datetime
-
+from enum import Enum
 from peewee import (
-    Model,
     CharField,
-    DateTimeField,
     PrimaryKeyField
 )
+from src.models.base import BaseModel
 
 
-class Role(Model):
+class RoleTypeEnum(Enum):
+    """
+    角色类型
+    """
+    NORMAL = 'NORMAL'
+    # 管理员
+    ADMIN = 'ADMIN'
+    # 自定义
+    CUSTOM = 'CUSTOM'
+
+
+class Role(BaseModel):
     id = PrimaryKeyField()
     name = CharField(max_length=20, verbose_name='role name')
-    create_time = DateTimeField(verbose_name='role create time', default=datetime.datetime.utcnow)
+    type = CharField(max_length=20, verbose_name='role type')
 
     class Meta:
         table_name = 'roles'

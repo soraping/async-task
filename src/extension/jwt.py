@@ -1,12 +1,6 @@
-from enum import Enum
 from datetime import timedelta
 from sanic_jwt_extended import JWT
 from sanic_jwt_extended.tokens import Token
-
-
-class Role(Enum):
-    USER = 'USER'
-    ADMIN = 'ADMIN'
 
 
 class JwtExt:

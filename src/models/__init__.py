@@ -1,5 +1,11 @@
 from .goods import GoodsModel
+from .roles import Role, RoleTypeEnum
+from .users import UserModel
+
 
 __all__ = [
-    GoodsModel
+    GoodsModel,
+    UserModel,
+    Role,
+    RoleTypeEnum
 ]

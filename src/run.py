@@ -2,6 +2,8 @@ from sanic import Sanic
 from sanic.log import logger
 from peewee_async import Manager
 from sanic_openapi import openapi3_blueprint
+# from sanic_session import Session, AIORedisSessionInterface
+# from sanic_auth import Auth
 
 from src.config import CONFIG
 from werkzeug.utils import find_modules, import_string
@@ -33,22 +35,36 @@ def register_blueprints(api_module: str, app: Sanic) -> None:
 
 register_blueprints('views', app)
 
+# # session 配置
+# session = Session()
+
 
 @app.after_server_start
 async def setup(app: Sanic, loop) -> None:
     logger.info("app start")
     logger.info("swagger: {}/swagger".format(app.serve_location))
+
+    # 注册 redis
+    redis_pool = RedisSession.get_redis_pool(app.config['redis'])
+    app.ctx.redis = await redis_pool
+    logger.info("redis 连接成功")
+
+    # # auth 配置
+    # auth = Auth(app)
+    # app.ctx.auth = auth
+
+    # jwt
     JwtExt.initialize(app)
 
-    # # 注册 mysql
-    # db = ReconnectMySQLDatabase.get_db_instance(app.config['mysql'])
-    # db_proxy.initialize(db)
-    # mgr = Manager(db)
-    # app.ctx.db = mgr
-    #
-    # 注册 redis
-    app.ctx.redis = await RedisSession.get_redis_pool(app.config['redis'])
-    logger.info("redis 连接成功")
+    # # session
+    # session.init_app(app, interface=AIORedisSessionInterface(redis_pool))
+
+    # 注册 mysql
+    db = ReconnectMySQLDatabase.get_db_instance(app.config['mysql'])
+    db_proxy.initialize(db)
+    mgr = Manager(db)
+    app.ctx.db = mgr
+
     #
     # # 注册 mongo
     # app.ctx.mongo = MotorBase(**app.config['mongo']).get_db(app.config['mongo']['database'])
