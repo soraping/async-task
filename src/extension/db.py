@@ -1,9 +1,6 @@
-from peewee import Proxy
-from peewee_async import PooledMySQLDatabase, MySQLDatabase
+from peewee import MySQLDatabase
+from peewee_async import PooledMySQLDatabase
 from playhouse.shortcuts import ReconnectMixin
-
-# 连接库代理
-db = Proxy()
 
 
 class ReconnectBaseMysqlDB:
@@ -32,3 +29,8 @@ class ReconnectAsyncPooledMySQLDatabase(ReconnectMixin, PooledMySQLDatabase, Rec
         if not cls._instance:
             cls._instance = cls(**db_config, max_connections=10)
         return cls._instance
+
+
+
+if __name__ == '__main__':
+    print(isinstance(ReconnectMySQLDatabase({}), MySQLDatabase))

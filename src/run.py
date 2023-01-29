@@ -7,7 +7,7 @@ from sanic_openapi import openapi3_blueprint
 
 from src.config import CONFIG
 from werkzeug.utils import find_modules, import_string
-from extension import JwtExt, RedisSession, ReconnectMySQLDatabase, db_proxy
+from extension import JwtExt, RedisSession, init_mysql
 
 # 配置信息
 app_config = CONFIG.get_config()
@@ -35,6 +35,7 @@ def register_blueprints(api_module: str, app: Sanic) -> None:
 
 register_blueprints('views', app)
 
+
 # # session 配置
 # session = Session()
 
@@ -60,10 +61,7 @@ async def setup(app: Sanic, loop) -> None:
     # session.init_app(app, interface=AIORedisSessionInterface(redis_pool))
 
     # 注册 mysql
-    db = ReconnectMySQLDatabase.get_db_instance(app.config['mysql'])
-    db_proxy.initialize(db)
-    mgr = Manager(db)
-    app.ctx.db = mgr
+    app.ctx.db = init_mysql(app.config['mysql'])
 
     #
     # # 注册 mongo

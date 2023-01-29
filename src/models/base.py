@@ -1,10 +1,11 @@
 import datetime
 from peewee import (
     DateTimeField,
-    Model
+    Model,
+    DatabaseProxy
 )
 
-from src.extension import db_proxy
+database_proxy = DatabaseProxy()
 
 
 class BaseModel(Model):
@@ -14,4 +15,4 @@ class BaseModel(Model):
                                 verbose_name='modify time')
 
     class Meta:
-        database = db_proxy
+        database = database_proxy

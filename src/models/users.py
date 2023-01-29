@@ -5,7 +5,7 @@ from peewee import (
     CharField,
     ForeignKeyField
 )
-from .roles import Role
+from .roles import RoleModel
 
 
 class UserModel(BaseModel):
@@ -14,7 +14,7 @@ class UserModel(BaseModel):
     password = CharField(max_length=50, verbose_name='user password')
     salt = CharField(max_length=10, verbose_name='password salt')
     age = IntegerField(null=True, verbose_name='user age')
-    role_id = ForeignKeyField(model=Role, null=True, on_delete='SET NULL', verbose_name='role for user')
+    role_id = ForeignKeyField(model=RoleModel, null=True, on_delete='SET NULL', verbose_name='role for user')
 
     class Meta:
         table_name = 'user'

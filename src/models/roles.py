@@ -17,7 +17,7 @@ class RoleTypeEnum(Enum):
     CUSTOM = 'CUSTOM'
 
 
-class Role(BaseModel):
+class RoleModel(BaseModel):
     id = PrimaryKeyField()
     name = CharField(max_length=20, verbose_name='role name')
     type = CharField(max_length=20, verbose_name='role type')

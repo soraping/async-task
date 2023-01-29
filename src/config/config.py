@@ -28,6 +28,12 @@ class Config:
         "access_token_expires": 1
     }
 
+    # 初始化管理员账号
+    ADMIN = {
+        "username": "admin",
+        "password": "admin123"
+    }
+
     @classmethod
     def get_config(cls):
         """

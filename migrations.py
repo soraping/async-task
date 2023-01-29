@@ -147,6 +147,6 @@ class MigratorOperate:
 
 
 if __name__ == '__main__':
-    from src.models import Role, UserModel
-    # MigratorOperate(Role)
-    # MigratorOperate(UserModel)
+    from src.models import RoleModel, UserModel
+    mr = MigratorOperate(RoleModel)
+    # mr.add_table_column('desc')
