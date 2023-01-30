@@ -1,11 +1,12 @@
 import datetime
 from peewee import (
     DateTimeField,
-    Model,
-    DatabaseProxy
+    Model
 )
+from src.config import CONFIG
+from src.extension import InitMysql
 
-database_proxy = DatabaseProxy()
+database = InitMysql(CONFIG.get_config()['mysql'])()
 
 
 class BaseModel(Model):
@@ -15,4 +16,4 @@ class BaseModel(Model):
                                 verbose_name='modify time')
 
     class Meta:
-        database = database_proxy
+        database = database

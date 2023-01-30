@@ -1,13 +1,12 @@
 from sanic import Sanic
 from sanic.log import logger
-from peewee_async import Manager
 from sanic_openapi import openapi3_blueprint
 # from sanic_session import Session, AIORedisSessionInterface
 # from sanic_auth import Auth
 
 from src.config import CONFIG
 from werkzeug.utils import find_modules, import_string
-from extension import JwtExt, RedisSession, init_mysql
+from extension import JwtExt, RedisSession
 
 # 配置信息
 app_config = CONFIG.get_config()
@@ -61,7 +60,7 @@ async def setup(app: Sanic, loop) -> None:
     # session.init_app(app, interface=AIORedisSessionInterface(redis_pool))
 
     # 注册 mysql
-    app.ctx.db = init_mysql(app.config['mysql'])
+    # app.ctx.db = init_mysql(app.config['mysql'])
 
     #
     # # 注册 mongo

@@ -1,16 +1,45 @@
 import asyncio
-import click
+from rich.console import Console
+import importlib
 from src.config import CONFIG
-from src.extension import init_mysql
+from src.extension import InitMysql
+from migrations import MigratorOperate
 from src.models import RoleTypeEnum, RoleModel, UserModel
 from src.utils import gen_random, gen_password
 
 config_data = CONFIG.get_config()
-mgr = init_mysql(config_data['mysql'])
+mgr = InitMysql(config_data['mysql']).mgr()
+
+console = Console()
+
+
+def log(msg, mode='info'):
+    style = {
+        'info': "bold blue",
+        'warn': "bold yellow",
+        'error': "bold red"
+    }
+    console.print(f'【{config_data["PROJECT_NAME"]}】{msg}', style=style[mode])
 
 
 async def run():
-    await role()
+    await create_table()
+
+
+async def create_table():
+    log("开始创建数据表...")
+    models = importlib.import_module('src.models.__init__')
+    # 获取该模块配置的所有 model
+    gen_model_args = (args for args in models.__dict__
+                      if not args.startswith('__') and args.__contains__('Model'))
+    for args in gen_model_args:
+        # 获取真实 model 对象
+        model = getattr(models, args)
+        MigratorOperate(model)
+        log(f"生成表 {args}")
+
+
+
 
 
 async def role():
@@ -27,7 +56,14 @@ async def role():
     ]
 
     try:
-        await mgr.execute(RoleModel.select())
+        # await mgr.execute(
+        #     RoleModel.insert_many(role_list)
+        # )
+
+        roles = await mgr.execute(RoleModel.select())
+        print(list(roles))
+        await mgr.close()
+
     except Exception as ex:
         print(ex)
 

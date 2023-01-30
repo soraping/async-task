@@ -1,17 +1,12 @@
-from peewee import MySQLDatabase
-from peewee_async import PooledMySQLDatabase
+from peewee_async import PooledMySQLDatabase, MySQLDatabase
 from playhouse.shortcuts import ReconnectMixin
 
 
-class ReconnectBaseMysqlDB:
+class BaseMysqlDB:
     _instance = None
 
 
-class ReconnectMySQLDatabase(ReconnectMixin, MySQLDatabase, ReconnectBaseMysqlDB):
-    """
-    可断线重连db
-    """
-
+class MySQLDatabaseConnection(MySQLDatabase, BaseMysqlDB):
     @classmethod
     def get_db_instance(cls, db_config):
         if not cls._instance:
@@ -19,7 +14,14 @@ class ReconnectMySQLDatabase(ReconnectMixin, MySQLDatabase, ReconnectBaseMysqlDB
         return cls._instance
 
 
-class ReconnectAsyncPooledMySQLDatabase(ReconnectMixin, PooledMySQLDatabase, ReconnectBaseMysqlDB):
+class ReconnectMySQLDatabase(ReconnectMixin, MySQLDatabaseConnection):
+    """
+    可断线重连db
+    """
+    pass
+
+
+class ReconnectAsyncPooledMySQLDatabase(ReconnectMixin, PooledMySQLDatabase, BaseMysqlDB):
     """
     可断线重连的异步db连接池
     """
@@ -29,7 +31,6 @@ class ReconnectAsyncPooledMySQLDatabase(ReconnectMixin, PooledMySQLDatabase, Rec
         if not cls._instance:
             cls._instance = cls(**db_config, max_connections=10)
         return cls._instance
-
 
 
 if __name__ == '__main__':

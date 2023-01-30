@@ -14,6 +14,7 @@ class AttrDict(dict):
 
 
 class Config:
+    PROJECT_NAME = 'async-task'
     TIMEZONE = 'Asia/Shanghai'
     BASE_DIR = os.path.dirname(os.path.dirname(__file__))
     # 模式
