@@ -1,5 +1,7 @@
 import asyncio
+import peewee
 from rich.console import Console
+from rich.tree import Tree
 import importlib
 from src.config import CONFIG
 from src.extension import InitMysql
@@ -17,13 +19,24 @@ def log(msg, mode='info'):
     style = {
         'info': "bold blue",
         'warn': "bold yellow",
-        'error': "bold red"
+        'error': "bold red",
+        'start': '',
+        'done': "bold green"
     }
     console.print(f'【{config_data["PROJECT_NAME"]}】{msg}', style=style[mode])
 
 
+def tree_log(msg, guide_style='bold bright_blue'):
+    return Tree(
+        f'【{config_data["PROJECT_NAME"]}】{msg}',
+        guide_style=guide_style
+    )
+
+
 async def run():
     await create_table()
+    # await role()
+    await mgr.close()
 
 
 async def create_table():
@@ -31,19 +44,20 @@ async def create_table():
     models = importlib.import_module('src.models.__init__')
     # 获取该模块配置的所有 model
     gen_model_args = (args for args in models.__dict__
-                      if not args.startswith('__') and args.__contains__('Model'))
+                      if not args.startswith('__'))
     for args in gen_model_args:
         # 获取真实 model 对象
         model = getattr(models, args)
-        MigratorOperate(model)
-        log(f"生成表 {args}")
+        # 通过子类判断更加合理
+        if issubclass(model, peewee.Model):
+            MigratorOperate(model)
+            log(f"生成表 {model._meta.table_name}")
 
-
-
+    log("数据表创建完成!", mode='done')
 
 
 async def role():
-    print("初始化系统默认角色...")
+    log("初始化系统默认角色...")
     role_list = [
         {
             "name": "管理员",
@@ -54,22 +68,14 @@ async def role():
             "type": RoleTypeEnum.NORMAL.value
         }
     ]
-
-    try:
-        # await mgr.execute(
-        #     RoleModel.insert_many(role_list)
-        # )
-
-        roles = await mgr.execute(RoleModel.select())
-        print(list(roles))
-        await mgr.close()
-
-    except Exception as ex:
-        print(ex)
+    await mgr.execute(
+        RoleModel.insert_many(role_list)
+    )
+    log("系统默认角色创建完成!", mode='done')
 
 
 def admin():
-    print("初始化管理员账号...")
+    log("初始化管理员账号...")
     admin_data = config_data.get('ADMIN', dict(username="admin", password="admin123"))
     salt = gen_random(length=12)
     admin_data['salt'] = salt
