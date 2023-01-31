@@ -1,7 +1,19 @@
 import random
 import hashlib
-from typing import AnyStr
+import importlib
+from typing import AnyStr, Generator
 from .decorators import singleton
+
+
+def auto_load_gen(path: str) -> Generator:
+    """
+    根据路径，自动载入模块
+    :param path:
+    :return:
+    """
+    modules = importlib.import_module(str(path))
+    # 过滤掉模块内的魔术方法，返回模块真实对象
+    return (getattr(modules, args) for args in modules.__dict__ if not args.startswith('__'))
 
 
 def gen_random(mode='mixDigitLetter', length=16):
@@ -52,5 +64,6 @@ __all__ = [
     singleton,
     gen_random,
     md5,
-    gen_password
+    gen_password,
+    auto_load_gen
 ]

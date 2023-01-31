@@ -12,7 +12,7 @@ class UserModel(BaseModel):
     id = PrimaryKeyField()
     username = CharField(max_length=20, verbose_name='user name')
     password = CharField(max_length=50, verbose_name='user password')
-    salt = CharField(max_length=10, verbose_name='password salt')
+    salt = CharField(max_length=16, verbose_name='password salt')
     age = IntegerField(null=True, verbose_name='user age')
     role_id = ForeignKeyField(model=RoleModel, null=True, on_delete='SET NULL', verbose_name='role for user')
 

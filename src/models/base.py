@@ -15,5 +15,8 @@ class BaseModel(Model):
     update_time = DateTimeField(default=datetime.datetime.utcnow, formats='%Y-%m-%d %H:%M:%S',
                                 verbose_name='modify time')
 
+    def __getitem__(self, key):
+        return self.__dict__['__data__'].get(key, '')
+
     class Meta:
         database = database

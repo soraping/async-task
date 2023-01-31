@@ -1,13 +1,12 @@
 import asyncio
 import peewee
 from rich.console import Console
-from rich.tree import Tree
-import importlib
+from rich import print as rprint
 from src.config import CONFIG
 from src.extension import InitMysql
 from migrations import MigratorOperate
 from src.models import RoleTypeEnum, RoleModel, UserModel
-from src.utils import gen_random, gen_password
+from src.utils import gen_random, gen_password, auto_load_gen
 
 config_data = CONFIG.get_config()
 mgr = InitMysql(config_data['mysql']).mgr()
@@ -20,34 +19,26 @@ def log(msg, mode='info'):
         'info': "bold blue",
         'warn': "bold yellow",
         'error': "bold red",
-        'start': '',
+        'start': 'bold yellow',
         'done': "bold green"
     }
     console.print(f'【{config_data["PROJECT_NAME"]}】{msg}', style=style[mode])
 
 
-def tree_log(msg, guide_style='bold bright_blue'):
-    return Tree(
-        f'【{config_data["PROJECT_NAME"]}】{msg}',
-        guide_style=guide_style
-    )
-
-
 async def run():
+    log("开始安装...", mode='start')
     await create_table()
-    # await role()
+    await role()
+    await admin()
     await mgr.close()
+    log("安装完成", mode='done')
 
 
 async def create_table():
     log("开始创建数据表...")
-    models = importlib.import_module('src.models.__init__')
-    # 获取该模块配置的所有 model
-    gen_model_args = (args for args in models.__dict__
-                      if not args.startswith('__'))
-    for args in gen_model_args:
-        # 获取真实 model 对象
-        model = getattr(models, args)
+    # 获取模块
+    models = auto_load_gen('src.models.__init__')
+    for model in models:
         # 通过子类判断更加合理
         if issubclass(model, peewee.Model):
             MigratorOperate(model)
@@ -74,13 +65,22 @@ async def role():
     log("系统默认角色创建完成!", mode='done')
 
 
-def admin():
+async def admin():
     log("初始化管理员账号...")
     admin_data = config_data.get('ADMIN', dict(username="admin", password="admin123"))
     salt = gen_random(length=12)
     admin_data['salt'] = salt
     admin_data['password'] = gen_password(admin_data['password'], salt)
-    print(admin_data)
+    admin_role_gen = await mgr.execute(
+        RoleModel.select().where((RoleModel.type == RoleTypeEnum.ADMIN.value))
+    )
+    admin_data['role_id'] = admin_role_gen[0]['id']
+    admin_data['age'] = 10
+    rprint(admin_data)
+    await mgr.execute(
+        UserModel.insert(**admin_data)
+    )
+    log("管理员账号创建完成！", mode='done')
 
 
 if __name__ == '__main__':
