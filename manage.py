@@ -55,8 +55,8 @@ async def role():
             "type": RoleTypeEnum.ADMIN.value
         },
         {
-            "name": "客户",
-            "type": RoleTypeEnum.NORMAL.value
+            "name": "用户",
+            "type": RoleTypeEnum.USER.value
         }
     ]
     await mgr.execute(

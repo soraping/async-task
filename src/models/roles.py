@@ -10,7 +10,7 @@ class RoleTypeEnum(Enum):
     """
     角色类型
     """
-    NORMAL = 'NORMAL'
+    USER = 'USER'
     # 管理员
     ADMIN = 'ADMIN'
     # 自定义

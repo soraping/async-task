@@ -5,7 +5,6 @@ from sanic_openapi import openapi3_blueprint
 # from sanic_auth import Auth
 
 from src.config import CONFIG
-# from extension import JwtExt, RedisSession
 from src.utils import auto_load_gen
 
 # 配置信息
@@ -15,8 +14,8 @@ app_config = CONFIG.get_config()
 app = Sanic(name='async-task', log_config=app_config['BASE_LOGGING'])
 app.config.update(app_config)
 
-# # 注册 swagger
-# app.blueprint(openapi3_blueprint)
+# 注册 swagger
+app.blueprint(openapi3_blueprint)
 
 
 def register_blueprints(api_module: str, app: Sanic) -> None:
@@ -59,8 +58,8 @@ async def setup(app: Sanic, loop) -> None:
     # # session
     # session.init_app(app, interface=AIORedisSessionInterface(redis_pool))
 
-    # 注册 mysql
-    # app.ctx.db = init_mysql(app.config['mysql'])
+    # # 注册 mysql
+    # app.ctx.db = InitMysql(app.config['mysql']).mgr()
 
     #
     # # 注册 mongo

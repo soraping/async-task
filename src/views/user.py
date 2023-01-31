@@ -5,22 +5,22 @@ from src.extension import JwtExt
 user_bp = Blueprint('user', url_prefix='/user')
 
 
-@user_bp.post('/login')
-@openapi.summary('user login')
-async def user_login(request: Request):
-    body = request.json
-    token = JwtExt.gen_token("c123123", body)
-    result = dict(**body, **dict(token=token))
-    return response.json({"data": result})
-
-
-@user_bp.post('/register')
-@openapi.summary('user register')
-async def user_register(request: Request):
-    body = request.json
-    token = JwtExt.gen_token("c123123", body)
-    result = dict(**body, **dict(token=token))
-    return response.json({"data": result})
+# @user_bp.post('/login')
+# @openapi.summary('user login')
+# async def user_login(request: Request):
+#     body = request.json
+#     token = JwtExt.gen_token("c123123", body)
+#     result = dict(**body, **dict(token=token))
+#     return response.json({"data": result})
+#
+#
+# @user_bp.post('/register')
+# @openapi.summary('user register')
+# async def user_register(request: Request):
+#     body = request.json
+#     token = JwtExt.gen_token("c123123", body)
+#     result = dict(**body, **dict(token=token))
+#     return response.json({"data": result})
 
 
 @user_bp.get('/list')

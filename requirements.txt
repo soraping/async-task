@@ -5,5 +5,5 @@ peewee_async==0.8.0
 PyYAML==6.0
 rich==13.3.1
 sanic==22.9.1
-sanic_jwt_extended==0.4.4
+sanic_jwt==1.8.0
 sanic_openapi==21.12.0
