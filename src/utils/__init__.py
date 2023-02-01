@@ -3,6 +3,7 @@ import hashlib
 import importlib
 from typing import AnyStr, Generator
 from .decorators import singleton
+from .exceptions import InitErrorHandler
 
 
 def auto_load_gen(path: str) -> Generator:
@@ -65,5 +66,6 @@ __all__ = [
     gen_random,
     md5,
     gen_password,
-    auto_load_gen
+    auto_load_gen,
+    InitErrorHandler
 ]

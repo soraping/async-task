@@ -1,11 +1,11 @@
-from sanic import Sanic, Blueprint
+from sanic import Sanic, Blueprint, Request, HTTPResponse
 from sanic.log import logger
 from sanic_openapi import openapi3_blueprint
 # from sanic_session import Session, AIORedisSessionInterface
 # from sanic_auth import Auth
 
 from src.config import CONFIG
-from src.utils import auto_load_gen
+from src.utils import auto_load_gen, InitErrorHandler
 from src.extension import JwtExt, InitMysql
 
 # 配置信息
@@ -38,6 +38,21 @@ register_blueprints('views.__init__', app)
 # # session 配置
 # session = Session()
 
+@app.middleware('request')
+async def interceptor(request: Request):
+    # 请求日志打印
+    request_id = request.id
+    method = request.method
+    url = request.uri_template
+    headers = dict(request.headers)
+
+
+@app.middleware('response')
+async def base_response(request: Request, response: HTTPResponse):
+    # 返回日志打印
+    # 统一报文
+    ...
+
 
 @app.after_server_start
 async def setup(app: Sanic, loop) -> None:
@@ -67,6 +82,9 @@ async def setup(app: Sanic, loop) -> None:
     # # 注册 mongo
     # app.ctx.mongo = MotorBase(**app.config['mongo']).get_db(app.config['mongo']['database'])
     # logger.info("mongo 连接成功")
+
+    # 异常处理
+    InitErrorHandler.initialize(app)
 
 
 @app.after_server_stop

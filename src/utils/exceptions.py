@@ -1,4 +1,5 @@
-from sanic import exceptions, Request
+from sanic import Sanic, exceptions, Request
+from sanic.log import logger
 from sanic.response import json
 
 
@@ -26,10 +27,20 @@ class NoAuthorizationError(exceptions.SanicException):
     message = "Authorization invalid"
 
 
-class ErrorHandler:
+class InitErrorHandler:
 
     def __init__(self, code):
         self.code = code
 
+    @classmethod
+    def initialize(cls, app: Sanic):
+        app.error_handler.add(exceptions.ServerError, cls._handler(exceptions.ServerError.status_code))
+        app.error_handler.add(exceptions.NotFound, cls._handler(exceptions.NotFound.status_code))
+
+    @classmethod
+    def _handler(cls, code):
+        return cls(code)
+
     def __call__(self, request: Request, error: exceptions.SanicException):
+        logger.error(str(error))
         return json({'message': str(error), 'errCode': self.code})
