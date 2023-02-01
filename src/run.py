@@ -6,6 +6,7 @@ from sanic_openapi import openapi3_blueprint
 
 from src.config import CONFIG
 from src.utils import auto_load_gen
+from src.extension import JwtExt, InitMysql
 
 # 配置信息
 app_config = CONFIG.get_config()
@@ -53,13 +54,14 @@ async def setup(app: Sanic, loop) -> None:
     # app.ctx.auth = auth
 
     # jwt
-    # JwtExt.initialize(app)
+    with JwtExt.initialize(app) as manager:
+        manager.config.secret_key = app.config['JWT']['secret_key']
 
     # # session
     # session.init_app(app, interface=AIORedisSessionInterface(redis_pool))
 
     # # 注册 mysql
-    # app.ctx.db = InitMysql(app.config['mysql']).mgr()
+    app.ctx.db = InitMysql(app.config['mysql']).mgr()
 
     #
     # # 注册 mongo

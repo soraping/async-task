@@ -74,7 +74,7 @@ async def admin():
     admin_role_gen = await mgr.execute(
         RoleModel.select().where((RoleModel.type == RoleTypeEnum.ADMIN.value))
     )
-    admin_data['role_id'] = admin_role_gen[0]['id']
+    admin_data['role'] = admin_role_gen[0]['id']
     admin_data['age'] = 10
     rprint(admin_data)
     await mgr.execute(

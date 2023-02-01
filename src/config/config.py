@@ -25,7 +25,6 @@ class Config:
     # jwt
     JWT = {
         "secret_key": "async-task",
-        "private_claim_prefix": "sanic_jwt_ext",
         "access_token_expires": 1
     }
 
