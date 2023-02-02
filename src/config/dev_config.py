@@ -10,7 +10,8 @@ class DevConfig(Config):
     BASE_LOGGING = {
         'version': 1,
         'loggers': {
-            "sanic.root": {"level": "INFO", "handlers": ["console", "console_err"]},
+            "sanic.root": {"level": "DEBUG", "handlers": ["console", "console_err"], 'propagate': True},
+            "sanic.error": {"level": "ERROR", "handlers": ["console_err"]},
         },
         'formatters': {
             'default': {
@@ -20,7 +21,7 @@ class DevConfig(Config):
         'handlers': {
             'console': {
                 'class': 'logging.StreamHandler',
-                'level': 'INFO',
+                'level': 'DEBUG',
                 'formatter': 'default',
             },
             'console_err': {

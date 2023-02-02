@@ -23,7 +23,7 @@ def load_config():
     try:
         if mode == ModeEnum.PRO.value:
             from .pro_config import ProConfig
-            ProConfig.MODE = "pro"
+            ProConfig.ENV = "pro"
 
             # 生成日志文件路径
             if not os.path.exists(ProConfig.LOGGING_INFO_FILE):

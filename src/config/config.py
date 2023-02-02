@@ -18,7 +18,7 @@ class Config:
     TIMEZONE = 'Asia/Shanghai'
     BASE_DIR = os.path.dirname(os.path.dirname(__file__))
     # 模式
-    MODE = "dev"
+    ENV = "dev"
     # 服务worker数量
     WORKERS = 1
 
@@ -44,7 +44,7 @@ class Config:
         遍历实例参数，子类属性也会遍历
         """
         # 读取yaml配置
-        with open(os.path.join(cls.BASE_DIR, f'config/db-{cls.MODE}.yaml')) as f:
+        with open(os.path.join(cls.BASE_DIR, f'config/db-{cls.ENV}.yaml')) as f:
             config_file_dict = AttrDict(yaml.safe_load(f))
 
         # 去掉method

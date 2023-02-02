@@ -23,6 +23,15 @@ async def user_data(request: Request):
     login_data = request.app.ctx.login_user
     return response.json({"data": login_data})
 
+
+@user_bp.get('/info/<user_id>')
+@openapi.summary('user info')
+@JwtExt.login_required()
+async def user_data(request: Request, user_id: str):
+    login_data = request.app.ctx.login_user
+    return response.json({"data": login_data})
+
+
 # @user_bp.post('/register')
 # @openapi.summary('user register')
 # async def user_register(request: Request):
@@ -36,17 +45,3 @@ async def user_data(request: Request):
 @openapi.summary('user list')
 async def get_user_list(request):
     return response.json({"msg": "hello world"})
-
-# @user_bp.get('/token')
-# @openapi.summary('user token')
-# async def get_token(request):
-#     token = JwtExt.gen_token("123", {"name": "zhangsan"})
-#     return response.json({"token": token})
-#
-#
-# @user_bp.get('/info')
-# @openapi.summary('user info')
-# async def get_user(request):
-#     token = request.args.get('token')
-#
-#     return response.json({"token": JwtExt.resolve_token(token)})

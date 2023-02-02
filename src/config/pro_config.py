@@ -6,17 +6,22 @@ from src.config.config import Config
 class ProConfig(Config):
     DEBUG = False
     ACCESS_LOG = True
-    WORKERS = multiprocessing.cpu_count()
+    # WORKERS = multiprocessing.cpu_count()
 
     # 日志文件路径
-    LOGGING_INFO_FILE = os.path.join(Config.BASE_DIR, 'logs/info.log')
-    LOGGING_ERROR_FILE = os.path.join(Config.BASE_DIR, 'logs/error.log')
+    LOGGING_INFO_FILE = os.path.join(Config.BASE_DIR, "..", 'logs/info.log')
+    LOGGING_ERROR_FILE = os.path.join(Config.BASE_DIR, "..", 'logs/error.log')
 
     # 日志配置
     BASE_LOGGING = {
         'version': 1,
         'loggers': {
-            "sanic.root": {"level": "INFO", "handlers": ['info_file', 'error_file']},
+            "sanic.root": {
+                "level": "INFO",
+                "handlers": ['info_file', 'error_file'],
+                'propagate': True
+            },
+            "sanic.error": {"level": "ERROR", "handlers": ["error_file"]},
         },
         'formatters': {
             'default': {

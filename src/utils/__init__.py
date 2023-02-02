@@ -1,3 +1,4 @@
+import json
 import random
 import hashlib
 import importlib
@@ -61,11 +62,21 @@ def gen_password(password: AnyStr, salt: AnyStr):
     return md5(salt.join(password))
 
 
+def json_prettify(data):
+    """
+    json 美化输出
+    :param data:
+    :return:
+    """
+    return json.dumps(data, indent=4)
+
+
 __all__ = [
     singleton,
     gen_random,
     md5,
     gen_password,
     auto_load_gen,
+    json_prettify,
     InitErrorHandler
 ]

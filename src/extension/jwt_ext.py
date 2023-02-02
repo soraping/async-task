@@ -4,6 +4,7 @@ from datetime import timedelta, datetime, timezone
 from contextlib import contextmanager
 from functools import wraps
 from sanic import Sanic, Request
+from sanic.log import logger
 import jwt
 from src.utils.exceptions import (
     InvalidJWTTokenError,
@@ -11,6 +12,7 @@ from src.utils.exceptions import (
     JWTTokenDecodeError,
     NoAuthorizationError
 )
+from src.utils import json_prettify
 
 
 @dataclass
@@ -85,6 +87,7 @@ class JwtExt:
                     raise InvalidJWTTokenError
                 resolve_token_data = cls.resolve_token(auth_token)
                 request.app.ctx.login_user = resolve_token_data
+                logger.info(f"request_id={str(request.id)}\nlogin_user={json_prettify(resolve_token_data)}")
                 response = await func(request, *args, **kwargs)
                 return response
 

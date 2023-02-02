@@ -5,7 +5,7 @@ from sanic_openapi import openapi3_blueprint
 # from sanic_auth import Auth
 
 from src.config import CONFIG
-from src.utils import auto_load_gen, InitErrorHandler
+from src.utils import auto_load_gen, InitErrorHandler, json_prettify
 from src.extension import JwtExt, InitMysql
 
 # 配置信息
@@ -41,10 +41,23 @@ register_blueprints('views.__init__', app)
 @app.middleware('request')
 async def interceptor(request: Request):
     # 请求日志打印
-    request_id = request.id
-    method = request.method
-    url = request.uri_template
-    headers = dict(request.headers)
+    request_id = str(request.id)
+    logger.info(f"request_id={request_id}\trequest_url={request.uri_template}")
+    request_data = {
+        'request_id': request_id,
+        'method': request.method,
+        'uri': request.uri_template,
+        'user-agent': request.headers.get('user-agent', ''),
+        'clientType': request.headers.get('clientType', ''),
+        'query': request.query_string,
+        'path': repr(request.match_info)
+    }
+
+    if request.method == 'POST':
+        request_data['data'] = request.json
+
+    # json.dumps(request_data, indent=4) 美化输出
+    logger.info(f"request_id={str(request.id)}\nrequest_data={json_prettify(request_data)}")
 
 
 @app.middleware('response')
@@ -57,6 +70,8 @@ async def base_response(request: Request, response: HTTPResponse):
 @app.after_server_start
 async def setup(app: Sanic, loop) -> None:
     logger.info("app start")
+    logger.info(f"启动环境 => {app.config['ENV']}")
+    logger.info(f"启动核心 => {app.config['WORKERS']}")
     logger.info("swagger: {}/swagger".format(app.serve_location))
 
     # # 注册 redis
