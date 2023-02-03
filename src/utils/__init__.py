@@ -2,8 +2,8 @@ import random
 import hashlib
 import importlib
 from typing import AnyStr, Generator
+from . import exceptions as custom_exceptions
 from .decorators import singleton
-from .exceptions import InitErrorHandler
 from .log import request_log
 
 
@@ -68,6 +68,6 @@ __all__ = [
     'md5',
     'gen_password',
     'auto_load_gen',
-    'InitErrorHandler',
+    'custom_exceptions',
     'request_log'
 ]

@@ -1,11 +1,12 @@
 from orjson import dumps
-from sanic import Sanic, Blueprint
+from sanic import Sanic, Blueprint, HTTPResponse
+from sanic.response import json
 from sanic.log import logger
 from sanic_openapi import openapi3_blueprint
 
 from src.config import CONFIG
 from src.config.context import MyContent, Request
-from src.utils import auto_load_gen, InitErrorHandler
+from src.utils import auto_load_gen, custom_exceptions
 from src.extension import JwtExt, InitMysql
 
 # 配置信息
@@ -44,11 +45,13 @@ register_blueprints('views.__init__', app)
 #     ...
 
 
-# @app.middleware('response')
-# async def base_response(request: Request, response: HTTPResponse):
-#     # 返回日志打印
-#     # 统一报文
-#     ...
+@app.middleware('response')
+async def base_response(request: Request, response):
+    # 返回日志打印
+    # 统一报文
+    return json({
+        'data': response
+    })
 
 
 @app.after_server_start
@@ -76,13 +79,13 @@ async def setup(app: Sanic, loop) -> None:
     # logger.info("mongo 连接成功")
 
     # 异常处理
-    InitErrorHandler.initialize(app)
+    custom_exceptions.InitErrorHandler.initialize(app)
 
 
 @app.after_server_stop
-async def stop(app):
+async def stop(app: Sanic):
     logger.info("app stop")
-    # await app.ctx.db.close()
+    await app.ctx.db.close()
     # await app.ctx.redis.close()
     # await app.ctx.mongo.close()
 

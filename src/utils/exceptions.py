@@ -27,6 +27,14 @@ class NoAuthorizationError(exceptions.SanicException):
     message = "header must has authorization"
 
 
+class RoleScopesRequestError(exceptions.SanicException):
+    """
+    角色权限
+    """
+    status_code = 401
+    message = "user role can not request"
+
+
 class InitErrorHandler:
 
     def __init__(self, code):

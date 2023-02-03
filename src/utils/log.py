@@ -40,7 +40,7 @@ def request_log(func):
         # json.dumps(request_data, indent=4) 美化输出
         logger.info(f"\nrequest_id={request_id}\nrequest_log={json_prettify(log_data)}")
         response = await func(request, *args, **kwargs)
-        logger.info(f"\nrequest_id={request_id}\nresponse_log={repr(response.body)}")
+        logger.info(f"\nrequest_id={request_id}\nresponse_log={repr(response)}")
         return response
 
     return decorator

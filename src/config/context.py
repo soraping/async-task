@@ -3,6 +3,7 @@ from peewee_async import Manager
 from sanic import Request as SanicRequest
 
 
+@dataclass
 class AuthUser:
     role: str
     user_id: str

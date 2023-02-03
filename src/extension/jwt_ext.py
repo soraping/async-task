@@ -5,13 +5,8 @@ from contextlib import contextmanager
 from functools import wraps
 from sanic import Sanic
 import jwt
-from src.utils.exceptions import (
-    InvalidJWTTokenError,
-    ConfigurationConflictError,
-    JWTTokenDecodeError,
-    NoAuthorizationError
-)
-from src.config.context import Request
+from src.utils import custom_exceptions
+from src.config.context import Request, AuthUser
 
 
 @dataclass
@@ -66,9 +61,9 @@ class JwtExt:
                 cls.config.secret_key,
                 algorithms=[cls.config.algorithm]
             )
-            return jwt_data['data']
+            return AuthUser(**jwt_data['data'])
         except jwt.exceptions.DecodeError:
-            raise JWTTokenDecodeError
+            raise custom_exceptions.JWTTokenDecodeError
 
     @classmethod
     def login_required(cls):
@@ -77,9 +72,9 @@ class JwtExt:
             async def decorated_function(request: Request, *args, **kwargs):
                 auth_token = request.headers.get('Authorization')
                 if not auth_token:
-                    raise NoAuthorizationError
+                    raise custom_exceptions.NoAuthorizationError
                 if not cls.check_token(auth_token):
-                    raise InvalidJWTTokenError
+                    raise custom_exceptions.InvalidJWTTokenError
                 resolve_token_data = cls.resolve_token(auth_token)
                 request.ctx.auth_user = resolve_token_data
                 response = await func(request, *args, **kwargs)
@@ -91,7 +86,21 @@ class JwtExt:
 
     @classmethod
     def scopes(cls, scopes: List[str]):
-        ...
+        """
+        权限接口
+        :param scopes: ['admin', 'user']
+        :return:
+        """
+        def decorator(func):
+            @wraps(func)
+            async def decorated_function(request: Request, *args, **kwargs):
+                auth_user = request.ctx.auth_user
+                role = auth_user.role
+                if role not in scopes:
+                    raise custom_exceptions.RoleScopesRequestError
+                return await func(request, *args, **kwargs)
+            return decorated_function
+        return decorator
 
     @classmethod
     def _validate_config(cls):
@@ -100,7 +109,7 @@ class JwtExt:
         :return:
         """
         if not cls.config.secret_key:
-            raise ConfigurationConflictError("You should config secret_key to string!")
+            raise custom_exceptions.ConfigurationConflictError("You should config secret_key to string!")
 
     @classmethod
     async def _check_token_cache(cls, identity: str):
@@ -112,7 +121,7 @@ class JwtExt:
         if cls._cache:
             cache_token = await cls._cache.get(identity)
             if not cache_token:
-                raise NoAuthorizationError
+                raise custom_exceptions.NoAuthorizationError
             return cache_token
 
     @classmethod

@@ -1,9 +1,10 @@
-from sanic import response, Blueprint
+from sanic import Blueprint
 from sanic_openapi import openapi
 from src.extension import JwtExt
 from src.services import user_service
 from src.utils import request_log
 from src.config.context import Request
+from src.models import RoleTypeEnum
 
 user_bp = Blueprint('user', url_prefix='/user')
 
@@ -15,7 +16,7 @@ async def user_login(request: Request):
     user_data = await user_service.query_user_by_login(request, body)
     token = JwtExt.create_access_token(user_data.id, {'role': user_data.role.type, 'user_id': user_data.id})
     result = dict(**body, **dict(token=token))
-    return response.json({"data": result})
+    return result
 
 
 @user_bp.get('/detail')
@@ -23,16 +24,17 @@ async def user_login(request: Request):
 @JwtExt.login_required()
 async def user_data(request: Request):
     login_data = request.ctx.auth_user
-    return response.json({"data": login_data})
+    return {"data": login_data}
 
 
 @user_bp.get('/info/<user_id>')
 @openapi.summary('user info')
 @JwtExt.login_required()
+@JwtExt.scopes([RoleTypeEnum.ADMIN.value])
 @request_log
 async def user_data(request: Request, user_id: str):
     login_data = request.ctx.auth_user
-    return response.json({"data": login_data})
+    return login_data
 
 
 # @user_bp.post('/register')
@@ -47,4 +49,4 @@ async def user_data(request: Request, user_id: str):
 @user_bp.get('/list')
 @openapi.summary('user list')
 async def get_user_list(request):
-    return response.json({"msg": "hello world"})
+    return {"msg": "hello world"}
