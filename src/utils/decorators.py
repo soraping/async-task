@@ -1,4 +1,4 @@
-import functools
+from functools import wraps
 
 
 def singleton(cls):
@@ -9,7 +9,7 @@ def singleton(cls):
     """
     _instances = {}
 
-    @functools.wraps(cls)
+    @wraps(cls)
     def instance(*args, **kw):
         cache_key = cls.__name__
         if cache_key not in _instances:

@@ -1,18 +1,22 @@
-from sanic import Sanic, Blueprint, Request, HTTPResponse
+from orjson import dumps
+from sanic import Sanic, Blueprint
 from sanic.log import logger
 from sanic_openapi import openapi3_blueprint
-# from sanic_session import Session, AIORedisSessionInterface
-# from sanic_auth import Auth
 
 from src.config import CONFIG
-from src.utils import auto_load_gen, InitErrorHandler, json_prettify
+from src.config.context import MyContent, Request
+from src.utils import auto_load_gen, InitErrorHandler
 from src.extension import JwtExt, InitMysql
 
 # 配置信息
 app_config = CONFIG.get_config()
 
 # 服务
-app = Sanic(name='async-task', log_config=app_config['BASE_LOGGING'])
+app = Sanic(name='async-task',
+            dumps=dumps,
+            ctx=MyContent(),
+            request_class=Request,
+            log_config=app_config['BASE_LOGGING'])
 app.config.update(app_config)
 
 # 注册 swagger
@@ -35,36 +39,16 @@ def register_blueprints(api_module: str, app: Sanic) -> None:
 register_blueprints('views.__init__', app)
 
 
-# # session 配置
-# session = Session()
-
-@app.middleware('request')
-async def interceptor(request: Request):
-    # 请求日志打印
-    request_id = str(request.id)
-    logger.info(f"request_id={request_id}\trequest_url={request.uri_template}")
-    request_data = {
-        'request_id': request_id,
-        'method': request.method,
-        'uri': request.uri_template,
-        'user-agent': request.headers.get('user-agent', ''),
-        'clientType': request.headers.get('clientType', ''),
-        'query': request.query_string,
-        'path': repr(request.match_info)
-    }
-
-    if request.method == 'POST':
-        request_data['data'] = request.json
-
-    # json.dumps(request_data, indent=4) 美化输出
-    logger.info(f"request_id={str(request.id)}\nrequest_data={json_prettify(request_data)}")
+# @app.middleware('request')
+# async def interceptor(request: Request):
+#     ...
 
 
-@app.middleware('response')
-async def base_response(request: Request, response: HTTPResponse):
-    # 返回日志打印
-    # 统一报文
-    ...
+# @app.middleware('response')
+# async def base_response(request: Request, response: HTTPResponse):
+#     # 返回日志打印
+#     # 统一报文
+#     ...
 
 
 @app.after_server_start
@@ -79,16 +63,9 @@ async def setup(app: Sanic, loop) -> None:
     # app.ctx.redis = await redis_pool
     # logger.info("redis 连接成功")
 
-    # # auth 配置
-    # auth = Auth(app)
-    # app.ctx.auth = auth
-
     # jwt
     with JwtExt.initialize(app) as manager:
         manager.config.secret_key = app.config['JWT']['secret_key']
-
-    # # session
-    # session.init_app(app, interface=AIORedisSessionInterface(redis_pool))
 
     # # 注册 mysql
     app.ctx.db = InitMysql(app.config['mysql']).mgr()

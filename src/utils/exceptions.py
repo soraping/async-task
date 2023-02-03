@@ -24,7 +24,7 @@ class NoAuthorizationError(exceptions.SanicException):
     token 不存在
     """
     status_code = 401
-    message = "Authorization invalid"
+    message = "header must has authorization"
 
 
 class InitErrorHandler:

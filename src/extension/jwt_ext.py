@@ -3,8 +3,7 @@ from typing import List, Optional, Union, Dict
 from datetime import timedelta, datetime, timezone
 from contextlib import contextmanager
 from functools import wraps
-from sanic import Sanic, Request
-from sanic.log import logger
+from sanic import Sanic
 import jwt
 from src.utils.exceptions import (
     InvalidJWTTokenError,
@@ -12,13 +11,7 @@ from src.utils.exceptions import (
     JWTTokenDecodeError,
     NoAuthorizationError
 )
-from src.utils import json_prettify
-
-
-@dataclass
-class Claim:
-    role: str
-    user_id: str
+from src.config.context import Request
 
 
 @dataclass
@@ -83,11 +76,12 @@ class JwtExt:
             @wraps(func)
             async def decorated_function(request: Request, *args, **kwargs):
                 auth_token = request.headers.get('Authorization')
+                if not auth_token:
+                    raise NoAuthorizationError
                 if not cls.check_token(auth_token):
                     raise InvalidJWTTokenError
                 resolve_token_data = cls.resolve_token(auth_token)
-                request.app.ctx.login_user = resolve_token_data
-                logger.info(f"request_id={str(request.id)}\nlogin_user={json_prettify(resolve_token_data)}")
+                request.ctx.auth_user = resolve_token_data
                 response = await func(request, *args, **kwargs)
                 return response
 

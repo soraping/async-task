@@ -1,10 +1,10 @@
-import json
 import random
 import hashlib
 import importlib
 from typing import AnyStr, Generator
 from .decorators import singleton
 from .exceptions import InitErrorHandler
+from .log import request_log
 
 
 def auto_load_gen(path: str) -> Generator:
@@ -62,21 +62,12 @@ def gen_password(password: AnyStr, salt: AnyStr):
     return md5(salt.join(password))
 
 
-def json_prettify(data):
-    """
-    json 美化输出
-    :param data:
-    :return:
-    """
-    return json.dumps(data, indent=4)
-
-
 __all__ = [
-    singleton,
-    gen_random,
-    md5,
-    gen_password,
-    auto_load_gen,
-    json_prettify,
-    InitErrorHandler
+    'singleton',
+    'gen_random',
+    'md5',
+    'gen_password',
+    'auto_load_gen',
+    'InitErrorHandler',
+    'request_log'
 ]

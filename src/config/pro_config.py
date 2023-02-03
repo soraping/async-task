@@ -1,5 +1,6 @@
 import multiprocessing
 import os
+from datetime import date
 from src.config.config import Config
 
 
@@ -9,8 +10,8 @@ class ProConfig(Config):
     # WORKERS = multiprocessing.cpu_count()
 
     # 日志文件路径
-    LOGGING_INFO_FILE = os.path.join(Config.BASE_DIR, "..", 'logs/info.log')
-    LOGGING_ERROR_FILE = os.path.join(Config.BASE_DIR, "..", 'logs/error.log')
+    LOGGING_INFO_FILE = os.path.join(Config.BASE_DIR, "..", f'logs/{date.today()}/info.log')
+    LOGGING_ERROR_FILE = os.path.join(Config.BASE_DIR, "..", f'logs/{date.today()}/error.log')
 
     # 日志配置
     BASE_LOGGING = {
